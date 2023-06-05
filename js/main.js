@@ -1,167 +1,121 @@
-// cotizador de envios latinoamerica
+let titulo = "Cotización de tu envío\n\n";
 
-function cotizacion() {
+let origen = prompt("Ingrese su país de origen").toLowerCase();
 
-  let titulo = "Cotizancion de tu envío\n\n"; 
+let destino = prompt("Ingrese el país sudamericano de destino").toLowerCase();
 
-// variables suministradas segun interes del cliente
+let cantidad = parseInt(prompt("Ingrese la cantidad de paquetes"));
 
-  let origen = prompt("Ingrese su país de origen").toUpperCase();
-  
-  let destino = prompt("Ingrese el país sudamericano de destino").toUpperCase(); 
-  
-  let cantidad = parseInt(prompt("Ingrese la cantidad de paquetes"));
-  
-  let peso = parseInt(prompt("Ingrese el peso de cada paquete en kg"));
+let peso = parseInt(prompt("Ingrese el peso de cada paquete en kg"));
 
-// valores fijos establecidos por la compañia que podrian variar
+let alto = parseInt(prompt("Ingrese el alto del paquete en centímetros"));
 
-  const seguro = 25;
+let ancho = parseInt(prompt("Ingrese el ancho del paquete en centímetros"));
 
-  let tasaColombia = 10;
+let largo = parseInt(prompt("Ingrese el largo del paquete en centímetros"));
 
-  let tasaArgentina = 15;
+const seguro = 25;
 
-  let tasaBolivia = 5;
+let tasaPaises = [
 
-  let tasaBrazil = 12;
+    { pais: 'colombia', tasa: 10 },
 
-  let tasaChile = 11;
+    { pais: 'argentina', tasa: 15 },
 
-  let tasaEcuador = 12;
+    { pais: 'bolivia', tasa: 5 },
 
-  let tasaGuyana = 9;
+    { pais: 'brazil', tasa: 12 },
 
-  let tasaParaguay = 16;
+    { pais: 'chile', tasa: 11 },
 
-  let tasaPeru = 17;
+    { pais: 'ecuador', tasa: 12 },
 
-  let tasaSurinam = 18;
+    { pais: 'guayana', tasa: 9 },
 
-  let tasaTrinidadYToBago = 20;
+    { pais: 'paraguay', tasa: 16 },
 
-  let tasaUruguay = 19;
+    { pais: 'surinam', tasa: 18 },
 
-  let tasaVenezuela = 3;
+    { pais: 'trinidadYtobago', tasa: 20 },
 
-// variables requeridas para liquidacion
+    { pais: 'uruguay', tasa: 19 },
 
-  let pesoTotal = cantidad * peso;
+    { pais: 'venezuela', tasa: 3 }
 
-  let resultado;
+];
 
-// para calcular dependiendo la seleccion del cliente
+let pesoTotal = cantidad * peso;
 
-  switch (destino) {
+let factorVolumetrico = calcularPesoVolumetrico(alto, ancho, largo, 5000);
 
-    case "COLOMBIA":
+let resultado;
 
-      resultado = tasaColombia * pesoTotal + seguro;
-
-      break;
-
-    case "ARGENTINA":
-
-      resultado = tasaArgentina * pesoTotal + seguro;
-
-      break;
-
-    case "BOLIVIA":
-
-      resultado = tasaBolivia * pesoTotal + seguro;
-
-      break;
-
-    case "BRAZIL":
-
-      resultado = pesoTotal * tasaBrazil + seguro;
-
-      break;
-
-    case "CHILE":
-
-      resultado = pesoTotal * tasaChile + seguro;
-
-      break;
-
-    case "ECUADOR":
-
-      resultado = pesoTotal * tasaEcuador + seguro;
-
-      break;
-
-    case "GUYANA":
-
-      resultado = pesoTotal * tasaGuyana + seguro;
-
-      break;
-
-    case "PARAGUAY":
-
-      resultado = pesoTotal * tasaParaguay + seguro;
-
-      break;
-
-    case "PERU":
-
-      resultado = pesoTotal * tasaPeru + seguro;
-
-      break;
-
-    case "SURINAM":
-
-      resultado = pesoTotal * tasaSurinam + seguro;
-
-      break;
-
-    case "TRINIDADYTOBAGO":
-
-      resultado = pesoTotal * tasaTrinidadYToBago + seguro;
-
-      break;
-
-    case "URUGUAY":
-
-      resultado = pesoTotal * tasaUruguay + seguro;
-
-      break;
-
-    case "VENEZUELA":
-
-      resultado = pesoTotal * tasaVenezuela + seguro;
-
-      break;
-
-    default:
-
-      resultado = 0;
-
-      break;
-
-  }
-
-//con los parametros de la empresa solo son permitidos destinos sur americanos
-
-  if (resultado === 0) {
+if (!existePais(destino)) {
 
     alert("El destino ingresado no es válido. Por favor, vuelva a intentarlo.");
 
-  } else {
+} else {
 
-    alert(titulo + "El costo de su envío es:\n" 
+    if (pesoTotal <= 20) {
 
-      + "País de origen: " + origen + "\n" 
+        resultado = obtenerTasa(destino) * pesoTotal + seguro;
 
-      + "País de destino: " + destino + "\n"
+        alert("Su envío se cotizó por peso suministrado.");
 
-      + "Cantidad de paquetes: " + cantidad + "\n"
+    } else {
 
-      + "Costo del seguro: " + seguro + "\n"
+        resultado = obtenerTasa(destino) * factorVolumetrico * cantidad + seguro;
 
-      + "El costo total de su envío es de $" + resultado.toFixed(2) + " USD");
+        alert("Su envío se cotizó por peso volumétrico.");
 
-  }
+    }
+
+    mostrarResultado(resultado);
 
 }
 
-cotizacion();
+function existePais(pais) {
+
+    return tasaPaises.some(item => item.pais === pais);
+
+}
+
+function obtenerTasa(pais) {
+
+    return tasaPaises.find(item => item.pais === pais).tasa;
+
+}
+
+function calcularPesoVolumetrico(alto, ancho, largo, factorVolumetrico) {
+
+  let volumen = alto * ancho * largo;
+
+    return volumen / factorVolumetrico;
+
+}
+
+function mostrarResultado(resultado) {
+
+    alert(
+
+        titulo + "El costo de su envío es: " + "\n" +
+
+        "País de origen: " + origen + "\n" +
+
+        "País de destino: " + destino + "\n" + 
+
+        "Cantidad de paquetes: " + cantidad + "\n" +
+
+        "Dimesiones ingresadas: " + "\n" +
+        
+        "Alto: " + alto + "\n" + 
+        
+        "Ancho: " + ancho + "\n" + 
+        
+        "Largo: " + largo + " \n" +
+
+        "Costo del seguro: " + seguro + "\n\n\n" +
+
+        "El costo total de su envío es de $" + resultado.toFixed(2) + " USD");
+
+}
