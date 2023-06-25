@@ -1,20 +1,8 @@
 let titulo = "Cotización de tu envío\n\n";
 
-let origen = prompt("Ingrese su país de origen").toLowerCase();
+let formulario = document.getElementById("formulario");
 
-let destino = prompt("Ingrese el país sudamericano de destino").toLowerCase();
-
-let cantidad = parseInt(prompt("Ingrese la cantidad de paquetes"));
-
-let peso = parseInt(prompt("Ingrese el peso de cada paquete en kg"));
-
-let alto = parseInt(prompt("Ingrese el alto del paquete en centímetros"));
-
-let ancho = parseInt(prompt("Ingrese el ancho del paquete en centímetros"));
-
-let largo = parseInt(prompt("Ingrese el largo del paquete en centímetros"));
-
-const seguro = 25;
+let resultadoContainer = document.getElementById("resultado-container");
 
 let tasaPaises = [
 
@@ -42,80 +30,195 @@ let tasaPaises = [
 
     { pais: 'venezuela', tasa: 3 }
 
-];
+    ];
 
-let pesoTotal = cantidad * peso;
+// Almacenar tasaPaises en localStorage
 
-let factorVolumetrico = calcularPesoVolumetrico(alto, ancho, largo, 5000);
+localStorage.setItem('tasaPaises', JSON.stringify(tasaPaises));
 
-let resultado;
+formulario.addEventListener('submit', function(event) {
 
-if (!existePais(destino)) {
+    event.preventDefault();
 
-    alert("El destino ingresado no es válido. Por favor, vuelva a intentarlo.");
+    let origen = document.getElementById("origen").value.toLowerCase();
 
-} else {
+    let destino = document.getElementById("destino").value.toLowerCase();
 
-    if (pesoTotal <= 20) {
+    let cantidad = parseInt(document.getElementById("cantidad").value);
 
-        resultado = obtenerTasa(destino) * pesoTotal + seguro;
+    let peso = parseInt(document.getElementById("peso").value);
 
-        alert("Su envío se cotizó por peso suministrado.");
+    let alto = parseInt(document.getElementById("alto").value);
 
-    } else {
+    let ancho = parseInt(document.getElementById("ancho").value);
 
-        resultado = obtenerTasa(destino) * factorVolumetrico * cantidad + seguro;
+    let largo = parseInt(document.getElementById("largo").value);
 
-        alert("Su envío se cotizó por peso volumétrico.");
+    if (!existePais(origen)) {
+
+        mostrarError(document.getElementById("origen"), "El país de origen ingresado no es válido. Por favor, vuelva a intentarlo.");
+
+        return;
 
     }
 
-    mostrarResultado(resultado);
+    if (!existePais(destino)) {
 
-}
+        mostrarError(document.getElementById("destino"), "El país de destino ingresado no es válido. Por favor, vuelva a intentarlo.");
+
+        return;
+
+    }
+
+    if (isNaN(cantidad) || cantidad <= 0) {
+
+        mostrarError(document.getElementById("cantidad"), "La cantidad de paquetes ingresada no es válida. Por favor, vuelva a intentarlo.");
+
+        return;
+
+    }
+
+    if (isNaN(peso) || peso <= 0) {
+
+        mostrarError(document.getElementById("peso"), "El peso de cada paquete ingresado no es válido. Por favor, vuelva a intentarlo.");
+
+        return;
+
+    }
+
+    if (isNaN(alto) || alto <= 0) {
+
+        mostrarError(document.getElementById("alto"), "El alto del paquete ingresado no es válido. Por favor, vuelva a intentarlo.");
+
+        return;
+
+    }
+
+    if (isNaN(ancho) || ancho <= 0) {
+
+        mostrarError(document.getElementById("ancho"), "El ancho del paquete ingresado no es válido. Por favor, vuelva a intentarlo.");
+
+        return;
+
+    }
+
+    if (isNaN(largo) || largo <= 0) {
+
+        mostrarError(document.getElementById("largo"), "El largo del paquete ingresado no es válido. Por favor, vuelva a intentarlo.");
+
+        return;
+
+    }
+
+const seguro = 25;
+
+let tasaDestino = obtenerTasa(destino);
+
+let pesoTotal = cantidad * peso;
+
+    if (pesoTotal <= 20) {
+
+        let resultado = pesoTotal * tasaDestino + seguro;
+
+        mostrarResultado("Su envío se cotizó por peso suministrado.", origen, destino, cantidad, alto, ancho, largo, resultado, seguro);
+
+    } else {
+
+        let factorVolumetrico = 5000;
+
+        let pesoVolumetrico = calcularPesoVolumetrico(alto, ancho, largo, factorVolumetrico);
+
+        let resultado = pesoVolumetrico * cantidad * tasaDestino + seguro;
+
+        mostrarResultado("Su envío se cotizó por peso volumétrico.", origen, destino, cantidad, alto, ancho, largo, resultado, seguro);
+
+    }
+
+});
 
 function existePais(pais) {
 
-    return tasaPaises.some(item => item.pais === pais);
+    let storedTasaPaises = localStorage.getItem('tasaPaises');
+
+    if (storedTasaPaises) {
+
+        let parsedTasaPaises = JSON.parse(storedTasaPaises);
+
+        return parsedTasaPaises.some(item => item.pais === pais);
+
+    }
+
+    return false;
 
 }
 
 function obtenerTasa(pais) {
 
-    return tasaPaises.find(item => item.pais === pais).tasa;
+    let storedTasaPaises = localStorage.getItem('tasaPaises');
+
+    if (storedTasaPaises) {
+
+        let parsedTasaPaises = JSON.parse(storedTasaPaises);
+
+        return parsedTasaPaises.find(item => item.pais === pais).tasa;
+
+    }
+
+    return 0;
 
 }
 
 function calcularPesoVolumetrico(alto, ancho, largo, factorVolumetrico) {
 
-  let volumen = alto * ancho * largo;
+    let volumen = alto * ancho * largo;
 
     return volumen / factorVolumetrico;
 
 }
 
-function mostrarResultado(resultado) {
+function mostrarResultado(mensaje, origen, destino, cantidad, alto, ancho, largo, resultado, seguro) {
 
-    alert(
+    let resultadoTexto =
 
-        titulo + "El costo de su envío es: " + "\n" +
+        `<h2>${titulo}</h2>` +
 
-        "País de origen: " + origen + "\n" +
+        `<p><strong>El costo de su envío es:</strong></p>` +
 
-        "País de destino: " + destino + "\n" + 
+        `<ul>` +
 
-        "Cantidad de paquetes: " + cantidad + "\n" +
+        `<li>País de origen: ${origen}</li>` +
 
-        "Dimesiones ingresadas: " + "\n" +
-        
-        "Alto: " + alto + "\n" + 
-        
-        "Ancho: " + ancho + "\n" + 
-        
-        "Largo: " + largo + " \n" +
+        `<li>País de destino: ${destino}</li>` +
 
-        "Costo del seguro: " + seguro + "\n\n\n" +
+        `<li>Cantidad de paquetes: ${cantidad}</li>` +
 
-        "El costo total de su envío es de $" + resultado.toFixed(2) + " USD");
+        `<li>Dimensiones ingresadas:</li>` +
+
+        `<ul>` +
+
+        `<li>Alto: ${alto}</li>` +
+
+        `<li>Ancho: ${ancho}</li>` +
+
+        `<li>Largo: ${largo}</li>` +
+
+        `</ul>` +
+
+        `<li>Costo del seguro: ${seguro}</li>` +
+
+        `</ul>` +
+
+        `<p><strong>El costo total de su envío es de $${resultado.toFixed(2)} USD</strong></p>`;
+
+    resultadoContainer.innerHTML = mensaje + resultadoTexto;
 
 }
+
+    function mostrarError(elemento, mensaje) {
+
+        elemento.classList.add("error");
+
+        resultadoContainer.textContent = mensaje;
+
+    }
+
