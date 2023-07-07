@@ -8,7 +8,7 @@ formulario.addEventListener('submit', function(event) {
 
     event.preventDefault();
 
-    fetch("/tasaPaises.json")
+    fetch("./tasaPaises.json")
 
         .then(response => response.json())
 
