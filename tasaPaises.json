@@ -1,0 +1,14 @@
+[
+    { "pais": "colombia", "tasa": 10 },
+    { "pais": "argentina", "tasa": 15 },
+    { "pais": "bolivia", "tasa": 5 },
+    { "pais": "brazil", "tasa": 12 },
+    { "pais": "chile", "tasa": 11 },
+    { "pais": "ecuador", "tasa": 12 },
+    { "pais": "guayana", "tasa": 9 },
+    { "pais": "paraguay", "tasa": 16 },
+    { "pais": "surinam", "tasa": 18 },
+    { "pais": "trinidadYtobago", "tasa": 20 },
+    { "pais": "uruguay", "tasa": 19 },
+    { "pais": "venezuela", "tasa": 3 }
+] 

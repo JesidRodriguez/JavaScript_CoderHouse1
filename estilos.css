@@ -14,7 +14,7 @@ body {
 
     padding-top: 20px;
 
-    background-color: cadetblue;
+    background-image: linear-gradient(to right top, #0d0537, #00386e, #006ba1, #00a2cb, #12daeb);
 
 }
 
@@ -59,7 +59,7 @@ body {
 
     line-height: 1.5;
 
-    color: #333;
+    color: white;
 
 }
 
@@ -96,3 +96,4 @@ body {
     font-weight: bold;
 
 }
+

@@ -4,41 +4,17 @@ let formulario = document.getElementById("formulario");
 
 let resultadoContainer = document.getElementById("resultado-container");
 
-let tasaPaises = [
-
-    { pais: 'colombia', tasa: 10 },
-
-    { pais: 'argentina', tasa: 15 },
-
-    { pais: 'bolivia', tasa: 5 },
-
-    { pais: 'brazil', tasa: 12 },
-
-    { pais: 'chile', tasa: 11 },
-
-    { pais: 'ecuador', tasa: 12 },
-
-    { pais: 'guayana', tasa: 9 },
-
-    { pais: 'paraguay', tasa: 16 },
-
-    { pais: 'surinam', tasa: 18 },
-
-    { pais: 'trinidadYtobago', tasa: 20 },
-
-    { pais: 'uruguay', tasa: 19 },
-
-    { pais: 'venezuela', tasa: 3 }
-
-    ];
-
-// Almacenar tasaPaises en localStorage
-
-localStorage.setItem('tasaPaises', JSON.stringify(tasaPaises));
-
 formulario.addEventListener('submit', function(event) {
 
     event.preventDefault();
+
+    fetch("../tasaPaises.json")
+
+        .then(response => response.json())
+
+        .then(tasaPaises => {
+
+        localStorage.setItem('tasaPaises', JSON.stringify(tasaPaises));
 
     let origen = document.getElementById("origen").value.toLowerCase();
 
@@ -54,85 +30,115 @@ formulario.addEventListener('submit', function(event) {
 
     let largo = parseInt(document.getElementById("largo").value);
 
-    if (!existePais(origen)) {
+        if (!existePais(origen)) {
 
-        mostrarError(document.getElementById("origen"), "El país de origen ingresado no es válido. Por favor, vuelva a intentarlo.");
+            mostrarError(document.getElementById("origen"), "");
 
-        return;
+            Swal.fire('El país de origen ingresado no es válido. Por favor, vuelva a intentarlo.');
 
-    }
+            return;
 
-    if (!existePais(destino)) {
+        }
 
-        mostrarError(document.getElementById("destino"), "El país de destino ingresado no es válido. Por favor, vuelva a intentarlo.");
+        if (!existePais(destino)) {
 
-        return;
+            mostrarError(document.getElementById("destino"), "");
 
-    }
+            Swal.fire('El país de destino ingresado no es válido. Por favor, vuelva a intentarlo.', );
 
-    if (isNaN(cantidad) || cantidad <= 0) {
+            return;
 
-        mostrarError(document.getElementById("cantidad"), "La cantidad de paquetes ingresada no es válida. Por favor, vuelva a intentarlo.");
+        }
 
-        return;
+        if (isNaN(cantidad) || cantidad <= 0) {
 
-    }
+            mostrarError(document.getElementById("cantidad"), "");
 
-    if (isNaN(peso) || peso <= 0) {
+            Swal.fire('La cantidad de paquetes ingresada no es válida. Por favor, vuelva a intentarlo.');
+        
+            return;
 
-        mostrarError(document.getElementById("peso"), "El peso de cada paquete ingresado no es válido. Por favor, vuelva a intentarlo.");
+        }
 
-        return;
+        if (isNaN(peso) || peso <= 0) {
 
-    }
+            mostrarError(document.getElementById("peso"), "");
 
-    if (isNaN(alto) || alto <= 0) {
+            Swal.fire('El peso de cada paquete ingresado no es válido. Por favor, vuelva a intentarlo.');
 
-        mostrarError(document.getElementById("alto"), "El alto del paquete ingresado no es válido. Por favor, vuelva a intentarlo.");
+            return;
 
-        return;
+        }
 
-    }
+        if (isNaN(alto) || alto <= 0) {
 
-    if (isNaN(ancho) || ancho <= 0) {
+            mostrarError(document.getElementById("alto"), "");
 
-        mostrarError(document.getElementById("ancho"), "El ancho del paquete ingresado no es válido. Por favor, vuelva a intentarlo.");
+            Swal.fire('El alto del paquete ingresado no es válido. Por favor, vuelva a intentarlo.');
 
-        return;
+            return;
 
-    }
+        }
 
-    if (isNaN(largo) || largo <= 0) {
+        if (isNaN(ancho) || ancho <= 0) {
 
-        mostrarError(document.getElementById("largo"), "El largo del paquete ingresado no es válido. Por favor, vuelva a intentarlo.");
+            mostrarError(document.getElementById("ancho"), "");
 
-        return;
+            Swal.fire('El ancho del paquete ingresado no es válido. Por favor, vuelva a intentarlo.');
 
-    }
+            return;
 
-const seguro = 25;
+        }
 
-let tasaDestino = obtenerTasa(destino);
+        if (isNaN(largo) || largo <= 0) {
 
-let pesoTotal = cantidad * peso;
+            mostrarError(document.getElementById("largo"), "");
 
-    if (pesoTotal <= 20) {
+            Swal.fire('El largo del paquete ingresado no es válido. Por favor, vuelva a intentarlo.');
 
-        let resultado = pesoTotal * tasaDestino + seguro;
+            return;
 
-        mostrarResultado("Su envío se cotizó por peso suministrado.", origen, destino, cantidad, alto, ancho, largo, resultado, seguro);
+        }
 
-    } else {
+        const seguro = 25;
 
-        let factorVolumetrico = 5000;
+    let tasaDestino = obtenerTasa(destino);
 
-        let pesoVolumetrico = calcularPesoVolumetrico(alto, ancho, largo, factorVolumetrico);
+    let pesoTotal = cantidad * peso;
 
-        let resultado = pesoVolumetrico * cantidad * tasaDestino + seguro;
+        if (pesoTotal <= 20) {
 
-        mostrarResultado("Su envío se cotizó por peso volumétrico.", origen, destino, cantidad, alto, ancho, largo, resultado, seguro);
+            let resultado = pesoTotal * tasaDestino + seguro;
 
-    }
+            mostrarResultado("", origen, destino, cantidad, alto, ancho, largo, resultado, seguro);
+
+            Swal.fire('Su envío se cotizó por peso suministrado.');
+
+            return;
+
+        } else {
+
+            let factorVolumetrico = 5000;
+
+            let pesoVolumetrico = calcularPesoVolumetrico(alto, ancho, largo, factorVolumetrico);
+
+            let resultado = pesoVolumetrico * cantidad * tasaDestino + seguro;
+
+            mostrarResultado("", origen, destino, cantidad, alto, ancho, largo, resultado, seguro);
+
+            Swal.fire('Su envío se cotizó por peso volumétrico.');
+
+            return;
+
+        }
+    })
+    .catch(error => {
+
+        console.log('Error:', error);
+
+        Swal.fire('Ocurrió un error al obtener el archivo JSON. Por favor, inténtelo nuevamente.');
+
+    });
 
 });
 
@@ -214,11 +220,14 @@ function mostrarResultado(mensaje, origen, destino, cantidad, alto, ancho, largo
 
 }
 
-    function mostrarError(elemento, mensaje) {
+function mostrarError(elemento, mensaje) {
 
-        elemento.classList.add("error");
+    elemento.classList.add("error");
 
-        resultadoContainer.textContent = mensaje;
+    resultadoContainer.textContent = mensaje;
+    
+}
 
-    }
+
+
 
