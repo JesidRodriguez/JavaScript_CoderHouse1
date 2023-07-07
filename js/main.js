@@ -136,7 +136,7 @@ formulario.addEventListener('submit', function(event) {
 
         console.log('Error:', error);
 
-        Swal.fire('Ocurrió un error al obtener el archivo JSON. Por favor, inténtelo nuevamente.');
+        Swal.fire('');
 
     });
 
@@ -225,7 +225,7 @@ function mostrarError(elemento, mensaje) {
     elemento.classList.add("error");
 
     resultadoContainer.textContent = mensaje;
-    
+
 }
 
 
