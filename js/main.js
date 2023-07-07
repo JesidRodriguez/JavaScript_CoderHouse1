@@ -8,7 +8,7 @@ formulario.addEventListener('submit', function(event) {
 
     event.preventDefault();
 
-    fetch("../tasaPaises.json")
+    fetch("/tasaPaises.json")
 
         .then(response => response.json())
 
@@ -32,7 +32,7 @@ formulario.addEventListener('submit', function(event) {
 
         if (!existePais(origen)) {
 
-            mostrarError(document.getElementById("origen"), "");
+            mostrarError(document.getElementById("origen"), "El país de origen ingresado no es válido. Por favor, vuelva a intentarlo.");
 
             Swal.fire('El país de origen ingresado no es válido. Por favor, vuelva a intentarlo.');
 
